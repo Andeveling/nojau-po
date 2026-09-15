@@ -11,6 +11,9 @@ curl -fsSL https://raw.githubusercontent.com/Andeveling/nojau-po/main/install.sh
 
 Luego abre OpenCode y escribe: **configurar instancia**.
 
+Si algo falla, el agente usa la skill **ask-nojau-po** (qué skill seguir
+y cómo recuperarse: sin match, guard, tag de sistema, sin `ok`, admin).
+
 Pega NIT o nombre + las fichas. El agente arma el goal y espera tu **`ok`**.
 Sin `ok` no escribe.
 

@@ -14,6 +14,7 @@ allowed-tools: Read, Glob, Grep
 
 Módulo de **tags** de la skill `agent-config` (instancia completa: paneles +
 tags + Terms Gate). Aquí solo `conversation_tags`.
+Si algo falla: `../ask-nojau-po/SKILL.md`.
 
 Configuras etiquetas de conversación en el tenant que Dani te pida, sin
 código ni servidores. Escribes solo con `nojau_agent_write` y solo después

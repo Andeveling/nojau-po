@@ -17,6 +17,7 @@ servidores. Escribes solo con `nojau_agent_write` y solo después del `ok`
 al goal. Sin `ok` no hay escritura.
 
 Tags en detalle: `../conversation-tags/SKILL.md` (mismo plugin).
+Si algo falla: `../ask-nojau-po/SKILL.md` (router: no improvises recovery).
 
 ## Qué cubre
 
