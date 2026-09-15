@@ -56,12 +56,11 @@ say "instalando plugin"
 cp "$ROOT/plugins/agent-config.ts" "$OPENCODE_DIR/plugins/agent-config.ts"
 
 say "instalando skills"
-rm -rf "$OPENCODE_DIR/skills/agent-config" "$OPENCODE_DIR/skills/conversation-tags"
-rm -rf "$HOME/.agents/skills/agent-config" "$HOME/.agents/skills/conversation-tags"
-cp -a "$ROOT/skills/agent-config" "$OPENCODE_DIR/skills/agent-config"
-cp -a "$ROOT/skills/conversation-tags" "$OPENCODE_DIR/skills/conversation-tags"
-cp -a "$ROOT/skills/agent-config" "$HOME/.agents/skills/agent-config"
-cp -a "$ROOT/skills/conversation-tags" "$HOME/.agents/skills/conversation-tags"
+for s in agent-config conversation-tags ask-nojau-po; do
+  rm -rf "$OPENCODE_DIR/skills/$s" "$HOME/.agents/skills/$s"
+  cp -a "$ROOT/skills/$s" "$OPENCODE_DIR/skills/$s"
+  cp -a "$ROOT/skills/$s" "$HOME/.agents/skills/$s"
+done
 
 if command -v npx >/dev/null 2>&1; then
   say "registrando skills en agentes (npx skills)"

@@ -1,34 +1,33 @@
 # nojau-po
 
-Dani configura instancias Nojau (paneles, tags, Terms Gate) **sin servidores
-y sin tocar config**.
+Kit para que **Dani** configure instancias Nojau (paneles, tags, Terms Gate)
+sin servidores y sin tocar config.
 
-## Dani
+## Dani (único paso)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Andeveling/nojau-po/main/install.sh | bash
 ```
 
-Luego abre OpenCode y escribe: **configurar instancia**.
-
-Si algo falla, el agente usa la skill **ask-nojau-po** (qué skill seguir
-y cómo recuperarse: sin match, guard, tag de sistema, sin `ok`, admin).
+Abre OpenCode y escribe: **configurar instancia**.
 
 Pega NIT o nombre + las fichas. El agente arma el goal y espera tu **`ok`**.
 Sin `ok` no escribe.
 
-(No uses un dominio tipo `dev.meta.ai`: el script vive en este repo de GitHub.)
+Si algo falla, el agente usa **ask-nojau-po**.
 
 ## Qué instala (sin preguntas)
 
-- Skills `agent-config` y `conversation-tags` en OpenCode
-- Plugin `agent-config.ts` en `~/.config/opencode/plugins/`
+- Skills en `~/.config/opencode/skills/` y `~/.agents/skills/`
+- Plugin en `~/.config/opencode/plugins/agent-config.ts`
 
-Las credenciales de DB **no las pone Dani**. El admin las deja una vez en
-`~/.config/opencode/nojau-agent-db.json` en su máquina.
+OpenCode V2 **carga solo** los `.ts` de esa carpeta. No hace falta
+`opencode.json` / `plugin` / `plugins`. Un archivo `.ts` en el jsonc
+rompe el loader (`configured plugin path must be a directory` y
+`Cannot find package '@opencode/plugin'`).
 
 ## Admin (no Dani)
 
 1. GRANTs por tenant: `db/create-opencode-agent-user.sql`
 2. Dejar `~/.config/opencode/nojau-agent-db.json` en la laptop de Dani
-   (usuario `opencode_agent`, sin secretos en este repo).
+   (usuario `opencode_agent`). Ese archivo no vive en este repo.
