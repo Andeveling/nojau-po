@@ -49,6 +49,7 @@ Detalle de copy: `../agent-config/references/errores-frecuentes.md` y
 | Duplicado de tag (UNIQUE, incluye soft-deleted) | Variante `_2` o reactivar (`is_active=1`). |
 | `assignment_case` > 500 | Recorta. Reintenta. |
 | `Sin credenciales` / plugin no carga | **Admin**, no Dani. Ver Escalada. |
+| Plugin failed / `Cannot find package '@opencode/plugin'` | El `.ts` no debe importar `@opencode/plugin`. Exporta `{ id, setup }` (como `engram.ts`). No listes un archivo en `plugin`/`plugins` del jsonc: V2 carga `~/.config/opencode/plugins/*.ts` solo. |
 | `GRANT` / `command denied` | **Admin**: grants en `db/`. No pidas a Dani un password. |
 | Escribió en el tenant equivocado | Para. Confirma company otra vez. No “corrijas” el otro tenant. |
 | Quiere campañas, WPI, Ciesa, clasificador | Fuera de scope. Dilo y sigue con paneles/tags/terms. |

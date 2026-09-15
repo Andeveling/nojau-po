@@ -1,5 +1,6 @@
-import { Plugin } from "@opencode/plugin"
-import { tool } from "@opencode-ai/plugin"
+// Sin import de @opencode/plugin ni @opencode-ai/plugin: en el runtime del
+// server esos paquetes no resuelven (log: Cannot find package '@opencode/plugin').
+// Plugin.define es identidad — un { id, setup } basta, igual que engram.ts.
 import { SQL } from "bun"
 import { homedir } from "os"
 
@@ -575,50 +576,7 @@ const READ_DESC = `Lee paneles agent_* + conversation_tags + agent_legal_terms (
 const WRITE_DESC = `Escribe paneles (agent_configs UPDATE only; instructions/faqs/activations/transfers/button_rules) + conversation_tags + agent_legal_terms. INSERT de hijos exige agent_config_id de un panel. Tags: name+assignment_case, sin system_key. Solo con goal aprobado (ok de Dani).`
 const TABLES_DESC = `Lista allowlist: paneles Agent Panels, conversation_tags, agent_legal_terms, agent_tools (read), companies (central read).`
 
-const agentReadV1 = tool({
-  description: READ_DESC,
-  args: {
-    sql: tool.schema.string().describe("Consulta SELECT read-only"),
-    database: tool.schema.string().optional().describe("DB destino (default tenant). companies vive en la central."),
-    limit: tool.schema.number().optional().describe("Max filas (default 50, max 200)"),
-  },
-  async execute(args) {
-    try {
-      return await runReadQuery(args.sql, args.database, args.limit ?? 50)
-    } catch (e) {
-      return `Error: ${e instanceof Error ? e.message : String(e)}`
-    }
-  },
-})
-
-const agentWriteV1 = tool({
-  description: WRITE_DESC,
-  args: {
-    sql: tool.schema.string().describe("INSERT/UPDATE/DELETE de una fila en la allowlist"),
-    database: tool.schema.string().optional().describe("Tenant DB validada contra companies"),
-  },
-  async execute(args) {
-    try {
-      return await runWriteQuery(args.sql, args.database)
-    } catch (e) {
-      return `Error: ${e instanceof Error ? e.message : String(e)}`
-    }
-  },
-})
-
-const agentTablesV1 = tool({
-  description: TABLES_DESC,
-  args: {},
-  async execute() {
-    try {
-      return await runTables()
-    } catch (e) {
-      return `Error: ${e instanceof Error ? e.message : String(e)}`
-    }
-  },
-})
-
-const v2 = Plugin.define({
+export default {
   id: "nojau-agent-config",
   async setup(ctx) {
     await ctx.tool.transform((editor) => {
@@ -683,18 +641,5 @@ const v2 = Plugin.define({
         },
       })
     })
-  },
-})
-
-export default {
-  ...v2,
-  async server() {
-    return {
-      tool: {
-        nojau_agent_read: agentReadV1,
-        nojau_agent_write: agentWriteV1,
-        nojau_agent_tables: agentTablesV1,
-      },
-    }
   },
 }

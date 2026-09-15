@@ -68,30 +68,9 @@ if command -v npx >/dev/null 2>&1; then
   npx --yes skills add "$REPO_SLUG" -g -y -s '*' >/dev/null 2>&1 || true
 fi
 
-# OpenCode carga ~/.config/opencode/plugins/*.ts. Si hay jsonc, asegúrate
-# de que el plugin esté listado sin tocar el resto de la config.
-CFG=""
-for f in "$OPENCODE_DIR/opencode.jsonc" "$OPENCODE_DIR/opencode.json"; do
-  [[ -f "$f" ]] && CFG="$f" && break
-done
-PLUGIN_PATH="$OPENCODE_DIR/plugins/agent-config.ts"
-if [[ -n "$CFG" ]] && ! grep -q 'agent-config.ts' "$CFG"; then
-  say "registrando plugin en $(basename "$CFG")"
-  python3 - "$CFG" "$PLUGIN_PATH" <<'PY' || true
-import sys
-from pathlib import Path
-cfg, plugin = Path(sys.argv[1]), sys.argv[2]
-text = cfg.read_text()
-if "agent-config.ts" in text:
-    raise SystemExit(0)
-needle = "{"
-i = text.find(needle)
-if i < 0:
-    raise SystemExit(0)
-insert = f'\n  "plugin": ["{plugin}"],'
-cfg.write_text(text[: i + 1] + insert + text[i + 1 :])
-PY
-fi
+# OpenCode V2 carga solo ~/.config/opencode/plugins/*.ts (como engram).
+# No toques opencode.jsonc: "plugin" + ruta a un .ts falla
+# ("configured plugin path must be a directory" + Cannot find @opencode/plugin).
 
 CREDS="$OPENCODE_DIR/nojau-agent-db.json"
 ALT="$OPENCODE_DIR/nojau-tenant-db.json"
