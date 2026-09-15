@@ -9,7 +9,11 @@ import { homedir } from "os"
 
 const DEFAULT_TENANT_DB = process.env.NOJAU_DB_DATABASE ?? "nojau_36_tenant"
 const CENTRAL_DB = process.env.NOJAU_DB_CENTRAL ?? "nojau_academy"
-const CREDS_FILE = `${homedir()}/.config/opencode/nojau-tenant-db.json`
+const CREDS_DIR = `${homedir()}/.config/opencode`
+const CREDS_FILES = [
+  `${CREDS_DIR}/nojau-agent-db.json`,
+  `${CREDS_DIR}/nojau-tenant-db.json`,
+]
 const DB_NAME = /^[A-Za-z0-9_]+$/
 
 export const PANEL_TYPES = [
@@ -153,17 +157,25 @@ type DbConfig = {
 const clients = new Map<string, SQL>()
 
 async function loadConfig(database: string): Promise<DbConfig> {
-  const file = Bun.file(CREDS_FILE)
-  if (await file.exists()) {
-    const saved = (await file.json()) as DbConfig
-    return { ...saved, database }
+  for (const path of CREDS_FILES) {
+    const file = Bun.file(path)
+    if (await file.exists()) {
+      const saved = (await file.json()) as DbConfig & { central_database?: string }
+      return {
+        hostname: saved.hostname,
+        port: saved.port ?? 25060,
+        username: saved.username,
+        password: saved.password,
+        database,
+      }
+    }
   }
   const hostname = process.env.NOJAU_DB_HOST
   const username = process.env.NOJAU_DB_USERNAME
   const password = process.env.NOJAU_DB_PASSWORD
   if (!hostname || !username || !password) {
     throw new Error(
-      `Sin credenciales: falta ${CREDS_FILE} o env NOJAU_DB_HOST/USERNAME/PASSWORD`,
+      `Sin credenciales: el admin debe dejar ${CREDS_FILES[0]} en esta máquina`,
     )
   }
   return {

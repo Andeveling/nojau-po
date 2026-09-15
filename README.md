@@ -1,71 +1,31 @@
 # nojau-po
 
-Kit para que Dani (Comercial) configure una instancia Nojau **sin servidores**:
-Agent Panels + Conversation Tags + Terms Gate.
+Dani configura instancias Nojau (paneles, tags, Terms Gate) **sin servidores
+y sin tocar config**.
 
-```
-nojau-po/
-├── skills/
-│   ├── agent-config/          ← instancia completa (usar esta)
-│   └── conversation-tags/     ← solo tags
-├── plugins/agent-config.ts    ← escritura con guards
-├── db/                        ← GRANTs (lo aplica admin, una vez por tenant)
-└── docs/goals/_template.md
-```
-
-## Dani — cómo trabajar
-
-1. Instala las skills en el proyecto (o global):
+## Dani
 
 ```bash
-npx skills add Andeveling/nojau-po
+curl -fsSL https://raw.githubusercontent.com/Andeveling/nojau-po/main/install.sh | bash
 ```
 
-2. En el chat de OpenCode, pega NIT o nombre de empresa y las fichas
-   (textos de paneles, FAQs, transfers, tags…).
+Luego abre OpenCode y escribe: **configurar instancia**.
 
-3. Di **configurar instancia** (skill `agent-config`). El agente:
-   - resuelve el tenant en `companies`
-   - lee lo que ya hay
-   - arma un goal y **espera tu `ok`**
-   - escribe y verifica por lecturas
+Pega NIT o nombre + las fichas. El agente arma el goal y espera tu **`ok`**.
+Sin `ok` no escribe.
 
-Sin `ok` no hay escritura.
+(No uses un dominio tipo `dev.meta.ai`: el script vive en este repo de GitHub.)
 
-## Admin — una vez (para que Dani pueda escribir)
+## Qué instala (sin preguntas)
 
-1. Copiar el plugin al repo consumidor:
+- Skills `agent-config` y `conversation-tags` en OpenCode
+- Plugin `agent-config.ts` en `~/.config/opencode/plugins/`
 
-```bash
-cp plugins/agent-config.ts <repo>/.opencode/plugins/agent-config.ts
-```
+Las credenciales de DB **no las pone Dani**. El admin las deja una vez en
+`~/.config/opencode/nojau-agent-db.json` en su máquina.
 
-Y en `opencode.json`:
+## Admin (no Dani)
 
-```json
-{
-  "plugin": ["./.opencode/plugins/agent-config.ts"]
-}
-```
-
-2. Credenciales de Dani (mínimo privilegio), en su máquina:
-
-`~/.config/opencode/nojau-tenant-db.json`
-
-```json
-{
-  "hostname": "<do-host>",
-  "port": 25060,
-  "username": "opencode_agent",
-  "password": "<secreto>",
-  "database": "nojau_27_tenant"
-}
-```
-
-3. Aplicar GRANTs por tenant: `db/create-opencode-agent-user.sql`
-   (y `GRANT SELECT ON nojau_academy.companies`). Ver `db/README.md`.
-
-## Límites
-
-No toca tags de sistema, paneles legacy `onboarding`/`commerce`,
-clasificador, campañas, WPI ni Ciesa.
+1. GRANTs por tenant: `db/create-opencode-agent-user.sql`
+2. Dejar `~/.config/opencode/nojau-agent-db.json` en la laptop de Dani
+   (usuario `opencode_agent`, sin secretos en este repo).
